@@ -158,7 +158,6 @@ let updateBashrc = ({reset = false} = {}) => {
 
 program.command('init')
 	.description(`Add to ${bashrc} line to set DFX_MOC_PATH to point to the current moc version`)
-	.option('--reset', 'Reset env file')
 	.action(async (options) => {
 		updateBashrc();
 	});

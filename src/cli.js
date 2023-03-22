@@ -17,7 +17,8 @@ if (process.platform == 'win32') {
 let bashrc = path.join(os.homedir(), '.bashrc');
 let cacheDir = path.join(os.homedir(), '.cache/mocv');
 let curVersionFile = path.join(cacheDir, 'versions/current/version.txt');
-let file = '.tmp/moc.tar.gz';
+let tmpDir = path.join(cacheDir, '.tmp');
+let file = path.join(tmpDir, 'moc.tar.gz');;
 
 let download = async (version, {silent} = {}) => {
 	if (!version) {
@@ -42,7 +43,7 @@ let download = async (version, {silent} = {}) => {
 	let arrayBuffer = await res.arrayBuffer();
 	let buffer = Buffer.from(arrayBuffer);
 
-	fs.mkdirSync('.tmp', {recursive: true});
+	fs.mkdirSync(tmpDir, {recursive: true});
 	fs.writeFileSync(file, buffer);
 
 	let verDir = path.join(cacheDir, 'versions', version);

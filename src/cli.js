@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import os, {version} from 'os';
 import path from 'path';
 import tar from 'tar';
@@ -65,7 +65,7 @@ let isCached = (version) => {
 }
 
 let setCurrent = (version) => {
-	fs.cpSync(path.join(cacheDir, 'versions', version), path.join(cacheDir, 'versions/current'), {recursive: true});
+	fs.copySync(path.join(cacheDir, 'versions', version), path.join(cacheDir, 'versions/current'), {recursive: true});
 	fs.writeFileSync(curVersionFile, version);
 }
 

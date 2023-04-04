@@ -8,6 +8,7 @@ import {program} from 'commander';
 import prompts from 'prompts';
 import {Octokit} from 'octokit';
 import chalk from 'chalk';
+import fetch from 'node-fetch';
 
 if (process.platform == 'win32') {
 	console.log('Windows is not supported. Please use WSL');

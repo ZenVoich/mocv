@@ -33,6 +33,7 @@
     "commander": "^10.0.0",
     "find-cache-dir": "^4.0.0",
     "git-releases": "^1.0.1",
+    "node-fetch": "^3.3.1",
     "octokit": "^2.0.14",
     "prompts": "^2.4.2",
     "tar": "^6.1.13"

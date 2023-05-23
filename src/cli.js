@@ -15,6 +15,7 @@ if (process.platform == 'win32') {
 	process.exit(1);
 }
 
+let zshrc = path.join(os.homedir(), '.zshrc');
 let bashrc = path.join(os.homedir(), '.bashrc');
 let cacheDir = path.join(os.homedir(), '.cache/mocv');
 let curVersionFile = path.join(cacheDir, 'versions/current/version.txt');
@@ -136,38 +137,132 @@ program.name('mocv')
 		await use(res.version);
 	});
 
-let updateBashrc = ({reset = false} = {}) => {
-	if (!fs.existsSync(bashrc)) {
-		console.log(`${bashrc} not found`);
-		process.exit(1);
+let updateShellConfig = async ({reset = false, yes = false} = {}) => {
+	let setDfxMocPath = reset || yes;
+	let updatePath = reset || yes;
+
+	if (!setDfxMocPath) {
+		let res = await prompts({
+			type: 'select',
+			name: 'setDfxMocPath',
+			message: 'Do you want to set DFX_MOC_PATH, so `dfx` will use the current `moc` version?',
+			choices: [
+				{
+					title: 'Yes',
+					value: true,
+				},
+				{
+					title: 'No',
+					value: false,
+				},
+			],
+		});
+		setDfxMocPath = res.setDfxMocPath;
 	}
 
-	let data = fs.readFileSync(bashrc).toString();
-	let appendLine = `\nexport DFX_MOC_PATH=${path.join(cacheDir, 'versions/current')}/moc\n`;
-	let appendLineOld = appendLine;
-	data = data.replace(appendLineOld, '');
-
-	if (!reset) {
-		data += appendLine;
+	if (!updatePath) {
+		let res = await prompts({
+			type: 'select',
+			name: 'updatePath',
+			message: 'Do you want to update PATH, so you can call `moc`, `mo-doc` and `mo-ide` from the terminal?',
+			choices: [
+				{
+					title: 'Yes',
+					value: true,
+				},
+				{
+					title: 'No',
+					value: false,
+				},
+			],
+		});
+		updatePath = res.updatePath;
 	}
 
-	fs.writeFileSync(bashrc, data);
+	if (!setDfxMocPath && !updatePath) {
+		console.log('Nothing to do');
+		return;
+	}
+
+	let configFiles = [];
+	if (reset || yes) {
+		configFiles = [bashrc, zshrc];
+	}
+	else {
+		let {configFile} = await prompts({
+			type: 'select',
+			name: 'configFile',
+			message: 'Select your shell config file',
+			choices: [
+				{
+					title: bashrc,
+					value: bashrc,
+				},
+				{
+					title: zshrc,
+					value: zshrc,
+				},
+			],
+		});
+		configFiles = [configFile];
+	}
+
+	for (let configFile of configFiles) {
+		if (!fs.existsSync(configFile)) {
+			console.log(`${configFile} not found`);
+			process.exit(1);
+		}
+
+		let data = fs.readFileSync(configFile).toString();
+		let setDfxLine = `\nexport DFX_MOC_PATH="$HOME/.cache/mocv/versions/current/moc"`;
+		let updatePathLine = `\nPATH="$HOME/.cache/mocv/versions/current:$PATH"`;
+
+		let newLines = [];
+		setDfxMocPath && newLines.push(setDfxLine);
+		updatePath && newLines.push(updatePathLine);
+
+		let oldLines = [
+			`\nexport DFX_MOC_PATH=${path.join(cacheDir, 'versions/current')}/moc\n`,
+			setDfxLine,
+			updatePathLine,
+		];
+		for (let oldLine of oldLines) {
+			data = data.replace(oldLine, '');
+		}
+
+		if (data.endsWith('\n\n')) {
+			data = data.trimEnd() + '\n';
+		}
+
+		if (!reset) {
+			if (!data.endsWith('\n')) {
+				data += '\n';
+			}
+			for (let newLine of newLines) {
+				data += newLine;
+			}
+			data += '\n';
+		}
+
+		fs.writeFileSync(configFile, data);
+	};
 
 	console.log('Success!');
-	// console.log(`Run "source ${bashrc}" to apply changes`);
+	// console.log(`Run "source ${configFile}" to apply changes`);
 	console.log(`Restart terminal to apply changes`);
 }
 
 program.command('init')
-	.description(`Add to ${bashrc} line to set DFX_MOC_PATH to point to the current moc version`)
+	.description(`mocv one time initialization`)
+	.option('-y, --yes', 'Skip prompts')
 	.action(async (options) => {
-		updateBashrc();
+		updateShellConfig(options);
 	});
 
 program.command('reset')
-	.description(`Reset env file`)
+	.description('Reset changes made by `mocv init`')
 	.action(async (options) => {
-		updateBashrc({reset: true});
+		updateShellConfig({reset: true});
 	});
 
 program.command('use <version>')

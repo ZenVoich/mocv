@@ -280,6 +280,9 @@ program.command('current')
 program.command('bin [version]')
 	.description('Print bin directory')
 	.action(async (version = getCurrent()) => {
+		if (version === 'latest') {
+			version = await getLatest();
+		}
 		if (!version) {
 			console.log('No version selected. Please pass a version arg or run `mocv` or `mocv use <version>`');
 			process.exit(1);

@@ -10,6 +10,16 @@ Select `moc` version
 ```
 mocv
 ```
+![](mocv.png)
+
+## Use in GitHub workflows
+Simply add this step
+```
+- name: Select moc version
+  run: echo "DFX_MOC_PATH=$(npx mocv bin latest)/moc" >> $GITHUB_ENV
+```
+
+Instead of `latest` you can specify the version of moc, for example `0.9.1`
 
 ## Setup
 

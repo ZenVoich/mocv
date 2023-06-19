@@ -105,12 +105,9 @@ let use = async (version) => {
 	console.log(`Selected moc ${version}`);
 
 	// update github env
-	console.log(process.env.GITHUB_ENV);
-	console.log(fs.readFileSync(process.env.GITHUB_ENV).toString());
 	if (process.env.GITHUB_ENV) {
 		fs.appendFileSync(process.env.GITHUB_ENV, `DFX_MOC_PATH=${path.join(cacheDir, 'versions', version)}/moc\n`);
 	}
-	console.log(fs.readFileSync(process.env.GITHUB_ENV).toString());
 }
 
 program.name('mocv')

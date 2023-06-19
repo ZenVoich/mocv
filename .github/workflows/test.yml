@@ -1,0 +1,42 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: aviate-labs/setup-dfx@v0.2.3
+        with:
+          dfx-version: 0.14.1
+
+      - name: install dfx
+        run: dfx cache install
+
+      - name: Install npm packages
+        run: npm install
+
+      - name: print moc version
+        run: echo $DFX_MOC_PATH
+
+      - name: Select moc version
+        run: node ./src/cli.js use 0.9.1
+
+      - name: print moc version
+        run: echo $DFX_MOC_PATH
+
+      - name: Select moc version
+        run: echo "DFX_MOC_PATH=$(npx mocv bin 0.9.2)/moc" >> $GITHUB_ENV
+
+      - name: print moc version
+        run: echo $DFX_MOC_PATH

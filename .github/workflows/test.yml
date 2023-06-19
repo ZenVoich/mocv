@@ -30,13 +30,19 @@ jobs:
         run: echo $DFX_MOC_PATH
 
       - name: Select moc version
-        run: node ./src/cli.js use 0.9.1
+        run: npx mocv use 0.9.0
 
       - name: print moc version
         run: echo $DFX_MOC_PATH
 
       - name: Select moc version
+        run: node ./src/cli.js use 0.9.1
+
+      - name: print moc version
+        run: $DFX_MOC_PATH --version
+
+      - name: Select moc version
         run: echo "DFX_MOC_PATH=$(npx mocv bin 0.9.2)/moc" >> $GITHUB_ENV
 
       - name: print moc version
-        run: echo $DFX_MOC_PATH
+        run: $DFX_MOC_PATH --version

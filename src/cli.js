@@ -108,7 +108,7 @@ let use = async (version) => {
 	console.log(process.env.GITHUB_ENV);
 	console.log(fs.readFileSync(process.env.GITHUB_ENV).toString());
 	if (process.env.GITHUB_ENV) {
-		fs.appendFileSync(process.env.GITHUB_ENV, `DFX_MOC_PATH=${path.join(cacheDir, 'versions', version)}\n`);
+		fs.appendFileSync(process.env.GITHUB_ENV, `DFX_MOC_PATH=${path.join(cacheDir, 'versions', version)}/moc\n`);
 	}
 	console.log(fs.readFileSync(process.env.GITHUB_ENV).toString());
 }

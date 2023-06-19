@@ -1,14 +1,14 @@
 # Motoko Compiler(moc) version manager
 
 ## Quick Start
-Install
+One-time initialization
 ```
-npm i mocv -g
-mocv init
+npx mocv init
 ```
+
 Select `moc` version
 ```
-mocv
+npx mocv
 ```
 ![](mocv.png)
 
@@ -16,10 +16,10 @@ mocv
 Simply add this step
 ```
 - name: Select moc version
-  run: echo "DFX_MOC_PATH=$(npx mocv bin latest)/moc" >> $GITHUB_ENV
+  run: npx mocv use 0.9.2
 ```
 
-Instead of `latest` you can specify the version of moc, for example `0.9.1`
+Instead of `0.9.2` you can specify any other moc version or `latest`
 
 ## Setup
 
